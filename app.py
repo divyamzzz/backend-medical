@@ -227,26 +227,23 @@ def malariapredictPage():
         if image_file.filename == '':
             return jsonify({'error': 'No image selected for uploading.'}), 400
 
+        # Open the image directly from the uploaded file
         img = Image.open(image_file)
-        img.save("uploads/image.jpg")
-        img_path = os.path.join(os.path.dirname(__file__), 'uploads/image.jpg')
+
+        # Preprocess the image
+        img = img.resize((128, 128))  # Resize to the required dimensions
+        img = np.array(img)  # Convert to a numpy array
+        img = np.expand_dims(img, axis=0)  # Add batch dimension
+
+        # Load the model and make predictions
+        model = tf.keras.models.load_model("models/malaria.keras")
+        pred = np.argmax(model.predict(img))
         
-        if os.path.isfile(img_path):
-            # Preprocess the image
-            img = tf.keras.utils.load_img(img_path, target_size=(128, 128))
-            img = tf.keras.utils.img_to_array(img)
-            img = np.expand_dims(img, axis=0)
-
-            # Load the model and make predictions
-            model = tf.keras.models.load_model("models/malaria.keras")
-            pred = np.argmax(model.predict(img))
-            return jsonify({'prediction': int(pred)})
-
-        else:
-            return jsonify({'error': 'Image file could not be found.'}), 400
+        return jsonify({'prediction': int(pred)})
 
     except Exception as e:
         return jsonify({'error': f"An error occurred: {str(e)}. Please upload a valid image."}), 500
+
     
 @app.route('/api/pneumoniapredict', methods=['POST'])
 def pneumoniapredictPage():
