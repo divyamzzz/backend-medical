@@ -228,33 +228,30 @@ def malariapredictPage():
             return jsonify({'error': 'No image selected for uploading.'}), 400
 
         # Open the image directly from the uploaded file
-        img = Image.open(image_file)
+        img = Image.open(image_file).convert('RGB')
 
         # Preprocess the image
-        img = img.resize((128, 128))  # Resize to the required dimensions
-        img = np.array(img)  # Convert to a numpy array
-        img = np.expand_dims(img, axis=0)  # Add batch dimension
+        img = img.resize((64, 64))  # Resize to smaller dimensions to save memory
+        img = np.array(img).astype('float16')  # Convert to float16 to save memory
+        img = np.expand_dims(img, axis=0)
 
-        # Load the model and make predictions
+        # Load the model, make predictions, and then unload the model
         print("Loading malaria prediction model...")
         model = tf.keras.models.load_model("models/malaria.keras")
         print("Model loaded successfully.")
         
         pred = np.argmax(model.predict(img))
-        
-        # After prediction, print a message indicating the model has been used
-        print("Model used for prediction.")
+        print("Prediction made:", int(pred))
 
-        # Simulate closing the model
-        print("Closing the malaria prediction model...")
-        # Perform any necessary cleanup here (if needed)
-        print("Model closed successfully.")
-        
+        # Unload model to free up memory
+        del model
+        tf.keras.backend.clear_session()
+
         return jsonify({'prediction': int(pred)})
 
     except Exception as e:
+        print(f"An error occurred: {str(e)}")
         return jsonify({'error': f"An error occurred: {str(e)}. Please upload a valid image."}), 500
-
 
 
 @app.route('/api/pneumoniapredict', methods=['POST'])
