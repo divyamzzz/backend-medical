@@ -11,7 +11,7 @@ import numpy as np
 app = Flask(__name__)
 CORS(app)
 
-@app.route('https://medical-predi.vercel.app/diabetes', methods=['POST'])
+@app.route('/api/diabetese', methods=['POST'])
 def predict_route():
     try:
         model = pickle.load(open('models/diabetes.pkl', 'rb'))
@@ -63,7 +63,7 @@ def predict_route():
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
     
-@app.route('https://medical-predi.vercel.app/breast-cancer', methods=['POST'])
+@app.route('/api/breastcancer', methods=['POST'])
 def predict_breast_cancer():
     model = None
     try:
@@ -104,7 +104,7 @@ def predict_breast_cancer():
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
     
-@app.route('https://medical-predi.vercel.app/heart-disease', methods=['POST'])
+@app.route('/api/heartdisease', methods=['POST'])
 def predict_heart_disease():
     model = None
     try:
@@ -140,7 +140,7 @@ def predict_heart_disease():
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
     
-@app.route('https://medical-predi.vercel.app/kidney-disease', methods=['POST'])
+@app.route('/api/kidneydisease', methods=['POST'])
 def predict_kidney_disease():
     model = None
     try:
@@ -183,7 +183,7 @@ def predict_kidney_disease():
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
-@app.route('https://medical-predi.vercel.app/liver-disease', methods=['POST'])
+@app.route('/api/liverdisease', methods=['POST'])
 def predict_liver_disease():
     data = request.json
 
@@ -217,7 +217,7 @@ def predict_liver_disease():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
     
-@app.route('https://medical-predi.vercel.app/malaria-predictor', methods=['POST'])
+@app.route('/api/malariapredict', methods=['POST'])
 def malariapredictPage():
     try:
         if 'image' not in request.files:
@@ -248,7 +248,7 @@ def malariapredictPage():
     except Exception as e:
         return jsonify({'error': f"An error occurred: {str(e)}. Please upload a valid image."}), 500
     
-@app.route('https://medical-predi.vercel.app/pneumonia-predictor', methods=['POST'])
+@app.route('/api/pneumoniapredict', methods=['POST'])
 def pneumoniapredictPage():
     try:
         if 'image' not in request.files:
@@ -279,5 +279,5 @@ def pneumoniapredictPage():
     except Exception as e:
         return jsonify({'error': f"An error occurred: {str(e)}. Please upload a valid image."}), 500
 
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__=="__main__":
+    app.run(host='0.0.0.0')
